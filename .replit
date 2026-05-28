@@ -1,0 +1,2 @@
+[run]
+command = "python app.py"
