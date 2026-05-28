@@ -280,6 +280,133 @@
             margin: 10px 0;
         }
 
+        /* ── Flow Builder ── */
+        .flow-builder {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .flow-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .flow-header i { font-size: 18px; color: #ffcc00; }
+        .flow-header span {
+            font-size: 13px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #ffcc00;
+        }
+
+        .flow-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .flow-list {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .flow-empty {
+            color: #333;
+            font-size: 12px;
+            letter-spacing: 2px;
+            padding: 12px;
+            text-align: center;
+            border: 1px dashed #222;
+            border-radius: 6px;
+        }
+
+        .flow-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #0d0d0d;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .flow-item .step-num {
+            color: #555;
+            font-size: 11px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .flow-item .step-name {
+            flex: 1;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #ffcc00;
+        }
+
+        .flow-item .flow-btn {
+            background: transparent;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+            color: #555;
+            cursor: pointer;
+            padding: 4px 6px;
+            font-size: 14px;
+            line-height: 1;
+            transition: all 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .flow-item .flow-btn:hover { color: #fff; border-color: #444; }
+        .flow-item .flow-btn.remove-btn:hover { color: #ff4444; border-color: #ff4444; }
+
+        .flow-avail {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .flow-avail-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #444;
+            margin-right: 4px;
+        }
+
+        .flow-avail-btn {
+            background: #0d0d0d;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .flow-avail-btn:hover { color: #ffcc00; border-color: #ffcc00; background: #1a1400; }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .sidebar {
@@ -338,6 +465,13 @@
                 <i class="ti ti-numbers"></i> ASCII
             </button>
 
+            <div class="sidebar-section" style="margin-top:8px;">Custom</div>
+
+            <button type="button" class="technique-btn {% if selected_technique == 'custom' %}active{% endif %}"
+                    onclick="selectTechnique('custom')">
+                <i class="ti ti-layer"></i> Custom Cipher
+            </button>
+
             <input type="hidden" name="technique" id="techniqueInput" value="{{ selected_technique }}">
 
         </form>
@@ -353,6 +487,23 @@
         <div class="main-header">
             <h2>Selected Technique</h2>
             <span id="techniqueLabel">{{ selected_technique }}</span>
+        </div>
+
+        <!-- CUSTOM FLOW BUILDER -->
+        <div id="flowBuilder" class="flow-builder" style="display:none;">
+            <div class="flow-header">
+                <i class="ti ti-layer"></i>
+                <span>Cipher Flow</span>
+            </div>
+            <div class="flow-body">
+                <div class="flow-list" id="flowList">
+                    <div class="flow-empty">No ciphers selected — add at least 2</div>
+                </div>
+                <div class="flow-avail" id="flowAvail">
+                    <span class="flow-avail-label">Add:</span>
+                </div>
+            </div>
+            <input type="hidden" name="custom_flow" id="customFlowInput" value="">
         </div>
 
         <form method="POST" id="encodeForm">
@@ -432,20 +583,83 @@
             atbash: 'Atbash',
             morse: 'Morse Code',
             rail: 'Rail Fence',
-            ascii: 'ASCII Shift'
+            ascii: 'ASCII Shift',
+            custom: 'Custom Cipher'
         };
 
+        const customLabels = {
+            codez: 'CodeZ',
+            reverse: 'Reverse',
+            atbash: 'Atbash',
+            rail: 'Rail Fence'
+        };
+
+        let flow = [];
+
         function selectTechnique(val) {
-            // update hidden inputs
             document.getElementById('techniqueInput').value = val;
             document.getElementById('techniqueInputMain').value = val;
-
-            // update label
             document.getElementById('techniqueLabel').innerText = labels[val];
 
-            // update active state
             document.querySelectorAll('.technique-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
+
+            const fb = document.getElementById('flowBuilder');
+            if (val === 'custom') {
+                fb.style.display = 'block';
+            } else {
+                fb.style.display = 'none';
+            }
+        }
+
+        function renderFlow() {
+            const list = document.getElementById('flowList');
+            const input = document.getElementById('customFlowInput');
+            const avail = document.getElementById('flowAvail');
+
+            if (flow.length === 0) {
+                list.innerHTML = '<div class="flow-empty">No ciphers selected — add at least 2</div>';
+            } else {
+                list.innerHTML = flow.map((t, i) =>
+                    `<div class="flow-item">
+                        <span class="step-num">${i + 1}.</span>
+                        <span class="step-name">${customLabels[t]}</span>
+                        ${i > 0 ? `<button type="button" class="flow-btn" onclick="moveFlow(${i}, -1)">↑</button>` : ''}
+                        ${i < flow.length - 1 ? `<button type="button" class="flow-btn" onclick="moveFlow(${i}, 1)">↓</button>` : ''}
+                        <button type="button" class="flow-btn remove-btn" onclick="removeFlow(${i})">✕</button>
+                    </div>`
+                ).join('');
+            }
+
+            input.value = flow.join(',');
+
+            const used = new Set(flow);
+            const available = Object.keys(customLabels).filter(t => !used.has(t));
+            if (available.length === 0) {
+                avail.innerHTML = '<span class="flow-avail-label">All added</span>';
+            } else {
+                avail.innerHTML = '<span class="flow-avail-label">Add:</span> ' +
+                    available.map(t =>
+                        `<button type="button" class="flow-avail-btn" onclick="addFlow('${t}')">+ ${customLabels[t]}</button>`
+                    ).join('');
+            }
+        }
+
+        function addFlow(t) {
+            flow.push(t);
+            renderFlow();
+        }
+
+        function removeFlow(i) {
+            flow.splice(i, 1);
+            renderFlow();
+        }
+
+        function moveFlow(i, dir) {
+            const j = i + dir;
+            if (j < 0 || j >= flow.length) return;
+            [flow[i], flow[j]] = [flow[j], flow[i]];
+            renderFlow();
         }
 
         function copyText(id, btn) {
@@ -459,6 +673,17 @@
                 }, 2000);
             });
         }
+
+        // Init from server-side on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            var curTech = '{{ selected_technique }}';
+            document.getElementById('techniqueLabel').innerText = labels[curTech] || curTech;
+            {% if selected_technique == 'custom' and custom_flow %}
+            flow = {{ custom_flow | tojson }};
+            renderFlow();
+            document.getElementById('flowBuilder').style.display = 'block';
+            {% endif %}
+        });
     </script>
 
 </body>

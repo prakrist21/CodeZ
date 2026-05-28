@@ -21,6 +21,9 @@ TECHNIQUES = {
     "ascii":   {"encode": ascii_encode,      "decode": ascii_decode},
 }
 
+CUSTOM_ALLOWED = ["codez", "reverse", "atbash", "rail"]
+CUSTOM_LABELS = {"codez": "CodeZ", "reverse": "Reverse", "atbash": "Atbash", "rail": "Rail Fence"}
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     enc_result = None
@@ -28,25 +31,43 @@ def index():
     dec_result = None
     dec_original = None
     selected_technique = "codez"
+    custom_flow = []
 
     if request.method == 'POST':
         selected_technique = request.form.get('technique', 'codez')
         action = request.form.get('action')
-        technique = TECHNIQUES.get(selected_technique, TECHNIQUES['codez'])
 
-        if action == 'encode':
-            enc_original = request.form.get('encode_sentence')
-            enc_result = technique['encode'](enc_original)
-        elif action == 'decode':
-            dec_original = request.form.get('decode_sentence')
-            dec_result = technique['decode'](dec_original)
+        if selected_technique == "custom":
+            flow_raw = request.form.get('custom_flow', '')
+            custom_flow = [t.strip() for t in flow_raw.split(',') if t.strip() in CUSTOM_ALLOWED]
+            if action == 'encode':
+                enc_original = request.form.get('encode_sentence')
+                enc_result = enc_original
+                for t in custom_flow:
+                    enc_result = TECHNIQUES[t]['encode'](enc_result)
+            elif action == 'decode':
+                dec_original = request.form.get('decode_sentence')
+                dec_result = dec_original
+                for t in reversed(custom_flow):
+                    dec_result = TECHNIQUES[t]['decode'](dec_result)
+        else:
+            technique = TECHNIQUES.get(selected_technique, TECHNIQUES['codez'])
+            if action == 'encode':
+                enc_original = request.form.get('encode_sentence')
+                enc_result = technique['encode'](enc_original)
+            elif action == 'decode':
+                dec_original = request.form.get('decode_sentence')
+                dec_result = technique['decode'](dec_original)
 
     return render_template('index.html',
         enc_result=enc_result,
         enc_original=enc_original,
         dec_result=dec_result,
         dec_original=dec_original,
-        selected_technique=selected_technique
+        selected_technique=selected_technique,
+        custom_flow=custom_flow,
+        custom_allowed=CUSTOM_ALLOWED,
+        custom_labels=CUSTOM_LABELS
     )
 
 @app.route('/about')
