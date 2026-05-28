@@ -9,19 +9,19 @@
         margin-bottom: 40px;
     }
 
-    .about-header .logo { font-size: 48px; color: #00ff88; }
+    .about-header .logo { font-size: 48px; color: var(--text-primary); }
 
     .about-header h1 {
         font-size: 28px;
         font-weight: bold;
         letter-spacing: 6px;
         text-transform: uppercase;
-        color: #00ff88;
+        color: var(--text-primary);
         margin-top: 10px;
     }
 
     .about-header p {
-        color: #555;
+        color: var(--text-muted);
         font-size: 13px;
         letter-spacing: 3px;
         margin-top: 6px;
@@ -36,10 +36,11 @@
     }
 
     .card {
-        background: #111;
-        border: 1px solid #1a1a1a;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 28px;
+        transition: background 0.3s, border 0.3s;
     }
 
     .card-header {
@@ -48,36 +49,37 @@
         gap: 12px;
         margin-bottom: 16px;
         padding-bottom: 14px;
-        border-bottom: 1px solid #1a1a1a;
+        border-bottom: 1px solid var(--border);
     }
 
-    .card-header i { font-size: 24px; color: #00ff88; }
+    .card-header i { font-size: 24px; color: var(--text-primary); }
 
     .card-header h2 {
         font-size: 16px;
         letter-spacing: 4px;
         text-transform: uppercase;
-        color: #00ff88;
+        color: var(--text-primary);
         font-weight: normal;
     }
 
     .card p {
-        color: #888;
+        color: var(--text-light);
         font-size: 14px;
         line-height: 1.8;
         margin-bottom: 14px;
     }
 
     .example-box {
-        background: #0d0d0d;
-        border: 1px solid #1a1a1a;
+        background: var(--result-bg);
+        border: 1px solid var(--border);
         border-radius: 6px;
         padding: 14px 16px;
         font-size: 13px;
+        transition: background 0.3s;
     }
 
     .example-box .ex-label {
-        color: #444;
+        color: var(--text-muted);
         font-size: 11px;
         letter-spacing: 3px;
         text-transform: uppercase;
@@ -92,28 +94,28 @@
         flex-wrap: wrap;
     }
 
-    .ex-val { color: #ccc; }
-    .ex-arrow { color: #333; }
-    .ex-result { color: #00ff88; }
+    .ex-val { color: var(--text-body); }
+    .ex-arrow { color: var(--text-muted); }
+    .ex-result { color: var(--text-primary); }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="about-header">
     <div class="logo"><i class="ti ti-info-circle"></i></div>
-    <h1>About CodeZ</h1>
+    <h1>About Spark</h1>
     <p>how each encoding technique works</p>
 </div>
 
 <div class="cards">
 
-    <!-- CodeZ -->
+    <!-- SparkFlip -->
     <div class="card">
         <div class="card-header">
             <i class="ti ti-code"></i>
-            <h2>CodeZ Cipher</h2>
+            <h2>SparkFlip</h2>
         </div>
-        <p>CodeZ is a custom two-step cipher. First, each word in the sentence is reversed individually. Then each letter is shifted forward by 6 positions in the alphabet, wrapping around from z back to a.</p>
+        <p>A two-step cipher. First, each word in the sentence is reversed individually. Then each letter is shifted forward by 6 positions in the alphabet, wrapping around from z back to a.</p>
         <p>To decode, the shift is reversed (each letter moved back by 6), then each word is reversed again to restore the original.</p>
         <div class="example-box">
             <div class="ex-label">Example</div>
@@ -123,6 +125,42 @@
                 <span class="ex-val">olleh</span>
                 <span class="ex-arrow">→ shift +6 →</span>
                 <span class="ex-result">urrk n</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SparkStep -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-versions"></i>
+            <h2>SparkStep</h2>
+        </div>
+        <p>Each letter is shifted by a varying amount depending on its position in the word — the first letter is shifted by 1, the second by 2, and so on. Each word is processed independently.</p>
+        <p>To decode, each letter is shifted back by its position index within the word.</p>
+        <div class="example-box">
+            <div class="ex-label">Example</div>
+            <div class="ex-row">
+                <span class="ex-val">hello</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">igopt</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SparkWave -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-stack-2"></i>
+            <h2>SparkWave</h2>
+        </div>
+        <p>Alternating shifts: even-positioned letters (0-indexed) are shifted forward by 6, while odd-positioned letters are shifted backward by 6. The entire sentence is then word-reversed as a final step.</p>
+        <p>To decode, the word reversal is undone first, then even/odd positions are shifted back by the inverse amounts.</p>
+        <div class="example-box">
+            <div class="ex-label">Example</div>
+            <div class="ex-row">
+                <span class="ex-val">hello</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">jgnnq</span>
             </div>
         </div>
     </div>
@@ -205,7 +243,7 @@
             <i class="ti ti-fence"></i>
             <h2>Rail Fence Cipher</h2>
         </div>
-        <p>A transposition cipher that writes the message in a zigzag pattern across a number of "rails" (rows), then reads off each rail left to right. CodeZ uses 3 rails by default.</p>
+        <p>A transposition cipher that writes the message in a zigzag pattern across a number of "rails" (rows), then reads off each rail left to right. Spark uses 3 rails by default.</p>
         <p>To decode, the positions of each character on the zigzag are reconstructed and the original message is restored.</p>
         <div class="example-box">
             <div class="ex-label">Example (3 rails)</div>
@@ -241,7 +279,7 @@
             <i class="ti ti-layer"></i>
             <h2>Custom Cipher</h2>
         </div>
-        <p>Chain together multiple ciphers in any order to create your own encryption pipeline. Choose from CodeZ, Reverse, Atbash, and Rail Fence — arrange them in the exact sequence you want.</p>
+        <p>Chain together multiple ciphers in any order to create your own encryption pipeline. Choose from SparkFlip, SparkStep, SparkWave, Reverse, Atbash, and Rail Fence — arrange them in the exact sequence you want.</p>
         <p>First pick how many ciphers to chain (2–4), then select each cipher from the dropdowns. Encoding applies each cipher in order; decoding applies them in reverse.</p>
         <div class="example-box">
             <div class="ex-label">Example flow: Reverse → Atbash → Rail Fence</div>

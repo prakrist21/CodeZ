@@ -1,27 +1,31 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from enc_code import (
-    encode_sentence, decode_sentence,
+    flip_encode, flip_decode,
     reverse_encode, reverse_decode,
     binary_encode, binary_decode,
     atbash_encode, atbash_decode,
     morse_encode, morse_decode,
     rail_fence_encode, rail_fence_decode,
-    ascii_encode, ascii_decode
+    ascii_encode, ascii_decode,
+    step_encode, step_decode,
+    wave_encode, wave_decode
 )
 
 app = Flask(__name__)
 
 TECHNIQUES = {
-    "codez":   {"encode": encode_sentence,   "decode": decode_sentence},
-    "reverse": {"encode": reverse_encode,    "decode": reverse_decode},
-    "binary":  {"encode": binary_encode,     "decode": binary_decode},
-    "atbash":  {"encode": atbash_encode,     "decode": atbash_decode},
-    "morse":   {"encode": morse_encode,      "decode": morse_decode},
-    "rail":    {"encode": rail_fence_encode, "decode": rail_fence_decode},
-    "ascii":   {"encode": ascii_encode,      "decode": ascii_decode},
+    "flip":  {"encode": flip_encode,   "decode": flip_decode},
+    "step":  {"encode": step_encode,   "decode": step_decode},
+    "wave":  {"encode": wave_encode,   "decode": wave_decode},
+    "reverse":  {"encode": reverse_encode,  "decode": reverse_decode},
+    "binary":   {"encode": binary_encode,   "decode": binary_decode},
+    "atbash":   {"encode": atbash_encode,   "decode": atbash_decode},
+    "morse":    {"encode": morse_encode,    "decode": morse_decode},
+    "rail":     {"encode": rail_fence_encode, "decode": rail_fence_decode},
+    "ascii":    {"encode": ascii_encode,     "decode": ascii_decode},
 }
 
-CUSTOM_ALLOWED = ["codez", "reverse", "atbash", "rail"]
+CUSTOM_ALLOWED = ["flip", "step", "wave", "reverse", "atbash", "rail"]
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -30,18 +34,34 @@ def index():
     enc_original = None
     dec_result = None
     dec_original = None
-    selected_technique = "codez"
+    selected_technique = "flip"
+    custom_flow = []
 
     if request.method == 'POST':
-        selected_technique = request.form.get('technique', 'codez')
+        selected_technique = request.form.get('technique', 'flip')
         action = request.form.get('action')
-        technique = TECHNIQUES.get(selected_technique, TECHNIQUES['codez'])
+        flow_raw = request.form.get('custom_flow', '').strip()
+        custom_flow = [t.strip() for t in flow_raw.split(',') if t.strip() in CUSTOM_ALLOWED]
+
         if action == 'encode':
             enc_original = request.form.get('encode_sentence')
-            enc_result = technique['encode'](enc_original)
+            if custom_flow:
+                enc_result = enc_original
+                for t in custom_flow:
+                    enc_result = TECHNIQUES[t]['encode'](enc_result)
+            else:
+                technique = TECHNIQUES.get(selected_technique, TECHNIQUES['flip'])
+                enc_result = technique['encode'](enc_original)
+
         elif action == 'decode':
             dec_original = request.form.get('decode_sentence')
-            dec_result = technique['decode'](dec_original)
+            if custom_flow:
+                dec_result = dec_original
+                for t in reversed(custom_flow):
+                    dec_result = TECHNIQUES[t]['decode'](dec_result)
+            else:
+                technique = TECHNIQUES.get(selected_technique, TECHNIQUES['flip'])
+                dec_result = technique['decode'](dec_original)
 
     return render_template('index.html',
         page='home',
@@ -49,41 +69,14 @@ def index():
         enc_original=enc_original,
         dec_result=dec_result,
         dec_original=dec_original,
-        selected_technique=selected_technique
-    )
-
-
-@app.route('/custom', methods=['GET', 'POST'])
-def custom():
-    enc_result = None
-    enc_original = None
-    dec_result = None
-    dec_original = None
-    custom_flow = []
-
-    if request.method == 'POST':
-        flow_raw = request.form.get('custom_flow', '')
-        custom_flow = [t.strip() for t in flow_raw.split(',') if t.strip() in CUSTOM_ALLOWED]
-        action = request.form.get('action')
-        if action == 'encode':
-            enc_original = request.form.get('encode_sentence')
-            enc_result = enc_original
-            for t in custom_flow:
-                enc_result = TECHNIQUES[t]['encode'](enc_result)
-        elif action == 'decode':
-            dec_original = request.form.get('decode_sentence')
-            dec_result = dec_original
-            for t in reversed(custom_flow):
-                dec_result = TECHNIQUES[t]['decode'](dec_result)
-
-    return render_template('custom.html',
-        page='custom',
-        enc_result=enc_result,
-        enc_original=enc_original,
-        dec_result=dec_result,
-        dec_original=dec_original,
+        selected_technique=selected_technique,
         custom_flow=custom_flow
     )
+
+
+@app.route('/custom')
+def custom_redirect():
+    return redirect(url_for('index'))
 
 
 @app.route('/about')

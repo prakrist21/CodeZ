@@ -5,11 +5,12 @@
 {% block head_styles %}
 <style>
     .flow-builder {
-        background: #111;
-        border: 1px solid #2a2a2a;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 20px 24px;
         margin-bottom: 24px;
+        transition: background 0.3s, border 0.3s;
     }
 
     .flow-header {
@@ -18,15 +19,15 @@
         gap: 10px;
         margin-bottom: 14px;
         padding-bottom: 12px;
-        border-bottom: 1px solid #1a1a1a;
+        border-bottom: 1px solid var(--border);
     }
 
-    .flow-header i { font-size: 18px; color: #ffcc00; }
+    .flow-header i { font-size: 18px; color: var(--text-yellow); }
     .flow-header span {
         font-size: 13px;
         letter-spacing: 4px;
         text-transform: uppercase;
-        color: #ffcc00;
+        color: var(--text-yellow);
     }
 
     .flow-row {
@@ -37,12 +38,12 @@
     }
 
     .flow-count-select {
-        background: #0d0d0d;
-        color: #ffcc00;
-        border: 1px solid #2a2a2a;
+        background: var(--input-bg);
+        color: var(--text-yellow);
+        border: 1px solid var(--border);
         border-radius: 4px;
         padding: 6px 8px;
-        font-family: 'Courier New', monospace;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -50,9 +51,9 @@
         cursor: pointer;
     }
 
-    .flow-count-select:hover { border-color: #444; }
-    .flow-count-select:focus { border-color: #ffcc00; }
-    .flow-count-select option { color: #ccc; background: #111; }
+    .flow-count-select:hover { border-color: var(--text-muted); }
+    .flow-count-select:focus { border-color: var(--text-yellow); }
+    .flow-count-select option { color: var(--text-body); background: var(--card-bg); }
 
     .flow-steps {
         display: flex;
@@ -69,19 +70,19 @@
 
     .flow-step .step-label {
         font-size: 11px;
-        color: #555;
+        color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 2px;
         min-width: 14px;
     }
 
     .flow-step select {
-        background: #0d0d0d;
-        color: #ffcc00;
-        border: 1px solid #2a2a2a;
+        background: var(--input-bg);
+        color: var(--text-yellow);
+        border: 1px solid var(--border);
         border-radius: 4px;
         padding: 6px 8px;
-        font-family: 'Courier New', monospace;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -89,9 +90,9 @@
         cursor: pointer;
     }
 
-    .flow-step select:hover { border-color: #444; }
-    .flow-step select:focus { border-color: #ffcc00; }
-    .flow-step select option { color: #ccc; background: #111; }
+    .flow-step select:hover { border-color: var(--text-muted); }
+    .flow-step select:focus { border-color: var(--text-yellow); }
+    .flow-step select option { color: var(--text-body); background: var(--card-bg); }
 </style>
 {% endblock %}
 
@@ -130,7 +131,7 @@
                 <h2>Encode</h2>
             </div>
             <textarea name="encode_sentence"
-                      placeholder="enter plaintext or paste a letter...">{{ enc_original or '' }}</textarea>
+                      placeholder="enter plain text or paste a letter...">{{ enc_original or '' }}</textarea>
             <button type="submit" name="action" value="encode">
                 <i class="ti ti-arrow-right"></i> Run Encode
             </button>
@@ -160,10 +161,10 @@
                 <h2>Decode</h2>
             </div>
             <textarea name="decode_sentence"
-                      placeholder="enter ciphertext or paste a letter...">{{ dec_original or '' }}</textarea>
+                      placeholder="enter cipher text or paste a letter...">{{ dec_original or '' }}</textarea>
             <button type="submit" name="action" value="decode">
                 <i class="ti ti-arrow-left"></i> Run Decode
-            </button>
+            </button>   
 
             {% if dec_result %}
             <div class="result-box">
@@ -190,7 +191,9 @@
 {% block scripts %}
 <script>
     const CIPHERS = [
-        {id: 'codez', label: 'CodeZ'},
+        {id: 'flip', label: 'SparkFlip'},
+        {id: 'step', label: 'SparkStep'},
+        {id: 'wave', label: 'SparkWave'},
         {id: 'reverse', label: 'Reverse'},
         {id: 'atbash', label: 'Atbash'},
         {id: 'rail', label: 'Rail Fence'}

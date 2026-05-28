@@ -3,50 +3,220 @@
 {% block title %} – Home{% endblock %}
 
 {% block sidebar_extra %}
-<form method="POST" id="mainForm">
-    <div class="sidebar-section">Techniques</div>
+<div class="sidebar-section">Techniques</div>
 
-    <button type="button" class="technique-btn {% if selected_technique == 'codez' %}active{% endif %}"
-            onclick="selectTechnique('codez')">
-        <i class="ti ti-code"></i> CodeZ
-    </button>
-    <button type="button" class="technique-btn {% if selected_technique == 'reverse' %}active{% endif %}"
-            onclick="selectTechnique('reverse')">
-        <i class="ti ti-transfer"></i> Reverse
-    </button>
-    <button type="button" class="technique-btn {% if selected_technique == 'binary' %}active{% endif %}"
-            onclick="selectTechnique('binary')">
-        <i class="ti ti-binary"></i> Binary
-    </button>
-    <button type="button" class="technique-btn {% if selected_technique == 'atbash' %}active{% endif %}"
-            onclick="selectTechnique('atbash')">
-        <i class="ti ti-arrows-exchange"></i> Atbash
-    </button>
-    <button type="button" class="technique-btn {% if selected_technique == 'morse' %}active{% endif %}"
-            onclick="selectTechnique('morse')">
-        <i class="ti ti-radio"></i> Morse
-    </button>
-    <button type="button" class="technique-btn {% if selected_technique == 'rail' %}active{% endif %}"
-            onclick="selectTechnique('rail')">
-        <i class="ti ti-fence"></i> Rail Fence
-    </button>
-    <button type="button" class="technique-btn {% if selected_technique == 'ascii' %}active{% endif %}"
-            onclick="selectTechnique('ascii')">
-        <i class="ti ti-numbers"></i> ASCII
-    </button>
+<button type="button" class="technique-btn {% if selected_technique == 'flip' %}active{% endif %}"
+        onclick="selectTechnique('flip')">
+    <i class="ti ti-code"></i> SparkFlip
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'step' %}active{% endif %}"
+        onclick="selectTechnique('step')">
+    <i class="ti ti-versions"></i> SparkStep
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'wave' %}active{% endif %}"
+        onclick="selectTechnique('wave')">
+    <i class="ti ti-stack-2"></i> SparkWave
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'reverse' %}active{% endif %}"
+        onclick="selectTechnique('reverse')">
+    <i class="ti ti-transfer"></i> Reverse
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'binary' %}active{% endif %}"
+        onclick="selectTechnique('binary')">
+    <i class="ti ti-binary"></i> Binary
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'atbash' %}active{% endif %}"
+        onclick="selectTechnique('atbash')">
+    <i class="ti ti-arrows-exchange"></i> Atbash
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'morse' %}active{% endif %}"
+        onclick="selectTechnique('morse')">
+    <i class="ti ti-radio"></i> Morse
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'rail' %}active{% endif %}"
+        onclick="selectTechnique('rail')">
+    <i class="ti ti-fence"></i> Rail Fence
+</button>
+<button type="button" class="technique-btn {% if selected_technique == 'ascii' %}active{% endif %}"
+        onclick="selectTechnique('ascii')">
+    <i class="ti ti-numbers"></i> ASCII
+</button>
 
-    <input type="hidden" name="technique" id="techniqueInput" value="{{ selected_technique }}">
-</form>
+<div class="sidebar-section">Chain</div>
+
+<button type="button" class="technique-btn {% if custom_flow %}active{% endif %}" id="customBtn"
+        onclick="selectCustom()">
+    <i class="ti ti-layer"></i> Custom
+</button>
+
+<input type="hidden" name="technique" id="techniqueInput" value="{{ selected_technique }}">
+{% endblock %}
+
+{% block head_styles %}
+<style>
+    .flow-builder {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        transition: background 0.3s, border 0.3s;
+    }
+
+    .flow-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .flow-header i { font-size: 16px; color: var(--text-yellow); }
+    .flow-header span {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--text-yellow);
+    }
+
+    .flow-header .flow-clear {
+        margin-left: auto;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 4px 10px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+    }
+
+    .flow-header .flow-clear:hover {
+        color: var(--text-body);
+        border-color: var(--text-muted);
+    }
+
+    .flow-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .flow-count-select {
+        background: var(--input-bg);
+        color: var(--text-yellow);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 5px 8px;
+        font-family: inherit;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .flow-count-select:hover { border-color: var(--text-muted); }
+    .flow-count-select:focus { border-color: var(--text-yellow); }
+    .flow-count-select option { color: var(--text-body); background: var(--card-bg); }
+
+    .flow-steps {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .flow-step {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .flow-step .step-label {
+        font-size: 10px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        min-width: 12px;
+    }
+
+    .flow-step select {
+        background: var(--input-bg);
+        color: var(--text-yellow);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 5px 8px;
+        font-family: inherit;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .flow-step select:hover { border-color: var(--text-muted); }
+    .flow-step select:focus { border-color: var(--text-yellow); }
+    .flow-step select option { color: var(--text-body); background: var(--card-bg); }
+
+    .flow-active-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-yellow);
+        margin-left: 12px;
+    }
+
+    .flow-active-tag i { font-size: 12px; }
+
+    .flow-builder.hidden { display: none; }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="main-header">
-    <h2>Selected Technique</h2>
-    <span id="techniqueLabel">{{ selected_technique }}</span>
+    <h2 id="modeLabel">{% if custom_flow %}Custom Chain{% else %}Selected Technique{% endif %}</h2>
+    <span id="techniqueLabel">
+        {%- if custom_flow -%}
+            {{ custom_flow | join(' → ') }}
+        {%- else -%}
+            {{ selected_technique }}
+        {%- endif -%}
+    </span>
+</div>
+
+<div class="flow-builder {% if not custom_flow %}hidden{% endif %}" id="flowBuilder">
+    <div class="flow-header">
+        <i class="ti ti-layer"></i>
+        <span>Chain Ciphers (optional)</span>
+        <button type="button" class="flow-clear" onclick="clearFlow()">
+            <i class="ti ti-x"></i> Clear
+        </button>
+    </div>
+    <div class="flow-row">
+        <label class="flow-step">
+            <span class="step-label">Count</span>
+            <select class="flow-count-select" id="flowCount" onchange="rebuildSteps()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </label>
+        <div class="flow-steps" id="flowSteps"></div>
+    </div>
 </div>
 
 <form method="POST" id="encodeForm">
     <input type="hidden" name="technique" id="techniqueInputMain" value="{{ selected_technique }}">
+    <input type="hidden" name="custom_flow" id="customFlowInput" value="{{ custom_flow | join(',') if custom_flow else '' }}">
 
     <div class="container">
 
@@ -57,7 +227,7 @@
                 <h2>Encode</h2>
             </div>
             <textarea name="encode_sentence"
-                      placeholder="enter plaintext or paste a letter...">{{ enc_original or '' }}</textarea>
+                      placeholder="enter plain text or paste a letter...">{{ enc_original or '' }}</textarea>
             <button type="submit" name="action" value="encode">
                 <i class="ti ti-arrow-right"></i> Run Encode
             </button>
@@ -87,7 +257,7 @@
                 <h2>Decode</h2>
             </div>
             <textarea name="decode_sentence"
-                      placeholder="enter ciphertext or paste a letter...">{{ dec_original or '' }}</textarea>
+                      placeholder="enter cipher text or paste a letter...">{{ dec_original or '' }}</textarea>
             <button type="submit" name="action" value="decode">
                 <i class="ti ti-arrow-left"></i> Run Decode
             </button>
@@ -117,7 +287,9 @@
 {% block scripts %}
 <script>
     const labels = {
-        codez: 'CodeZ Cipher',
+        flip: 'SparkFlip',
+        step: 'SparkStep',
+        wave: 'SparkWave',
         reverse: 'Reverse Only',
         binary: 'Binary',
         atbash: 'Atbash',
@@ -126,18 +298,154 @@
         ascii: 'ASCII Shift'
     };
 
+    const CIPHERS = [
+        {id: 'flip', label: 'SparkFlip'},
+        {id: 'step', label: 'SparkStep'},
+        {id: 'wave', label: 'SparkWave'},
+        {id: 'reverse', label: 'Reverse'},
+        {id: 'atbash', label: 'Atbash'},
+        {id: 'rail', label: 'Rail Fence'}
+    ];
+
+    const SUFFIXES = ['st', 'nd', 'rd', 'th'];
+
+    function stepLabel(i) {
+        return (i + 1) + SUFFIXES[Math.min(i, 3)];
+    }
+
     function selectTechnique(val) {
         document.getElementById('techniqueInput').value = val;
         document.getElementById('techniqueInputMain').value = val;
         document.getElementById('techniqueLabel').innerText = labels[val];
+        document.getElementById('modeLabel').innerText = 'Selected Technique';
 
         document.querySelectorAll('.technique-btn').forEach(btn => btn.classList.remove('active'));
         event.currentTarget.classList.add('active');
+
+        // hide custom flow builder, deselect custom
+        document.getElementById('customBtn').classList.remove('active');
+        document.getElementById('flowBuilder').classList.add('hidden');
+        document.getElementById('customFlowInput').value = '';
+        clearFlowSteps();
+    }
+
+    function selectCustom() {
+        document.querySelectorAll('.technique-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('customBtn').classList.add('active');
+        document.getElementById('flowBuilder').classList.remove('hidden');
+        document.getElementById('techniqueLabel').innerText = 'Custom Chain';
+        document.getElementById('modeLabel').innerText = 'Custom Chain';
+        document.getElementById('techniqueInput').value = '';
+        document.getElementById('techniqueInputMain').value = '';
+        updateFlow();
+    }
+
+    function clearFlowSteps() {
+        var steps = document.getElementById('flowSteps');
+        steps.innerHTML = '';
+        rebuildStepsPreserve();
+    }
+
+    function clearFlow() {
+        document.getElementById('customFlowInput').value = '';
+        var steps = document.getElementById('flowSteps');
+        var selects = steps.querySelectorAll('select');
+        selects.forEach(function(s) { s.value = ''; });
+        updateFlow();
+        document.getElementById('techniqueLabel').innerText = 'Custom Chain';
+        document.getElementById('modeLabel').innerText = 'Custom Chain';
+    }
+
+    function rebuildSteps() {
+        var count = parseInt(document.getElementById('flowCount').value);
+        var container = document.getElementById('flowSteps');
+        container.innerHTML = '';
+
+        for (var i = 0; i < count; i++) {
+            var label = document.createElement('span');
+            label.className = 'step-label';
+            label.textContent = stepLabel(i);
+
+            var select = document.createElement('select');
+            select.name = 'custom_step_' + i;
+            select.onchange = onStepChange;
+
+            var blank = document.createElement('option');
+            blank.value = '';
+            blank.textContent = '—';
+            select.appendChild(blank);
+
+            CIPHERS.forEach(function(c) {
+                var opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.label;
+                select.appendChild(opt);
+            });
+
+            var step = document.createElement('label');
+            step.className = 'flow-step';
+            step.appendChild(label);
+            step.appendChild(select);
+            container.appendChild(step);
+        }
+
+        updateFlow();
+    }
+
+    function rebuildStepsPreserve() {
+        var count = parseInt(document.getElementById('flowCount').value);
+        var container = document.getElementById('flowSteps');
+        // only rebuild if container is empty
+        if (container.children.length === 0) {
+            rebuildSteps();
+        }
+    }
+
+    function onStepChange() {
+        updateFlow();
+    }
+
+    function updateFlow() {
+        var count = parseInt(document.getElementById('flowCount').value);
+        var flow = [];
+        for (var i = 0; i < count; i++) {
+            var el = document.getElementsByName('custom_step_' + i)[0];
+            if (el && el.value) flow.push(el.value);
+        }
+        document.getElementById('customFlowInput').value = flow.join(',');
+
+        if (document.getElementById('customBtn').classList.contains('active')) {
+            document.getElementById('techniqueLabel').innerText = flow.length > 0 ? flow.join(' → ') : 'Custom Chain';
+            document.getElementById('modeLabel').innerText = 'Custom Chain';
+        } else {
+            var tech = document.getElementById('techniqueInput').value;
+            document.getElementById('techniqueLabel').innerText = labels[tech] || tech;
+            document.getElementById('modeLabel').innerText = 'Selected Technique';
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         var curTech = '{{ selected_technique }}';
         document.getElementById('techniqueLabel').innerText = labels[curTech] || curTech;
+
+        // restore custom flow if present
+        {% if custom_flow %}
+        var saved = {{ custom_flow | tojson }};
+        document.getElementById('flowCount').value = String(Math.max(saved.length, 2));
+        rebuildSteps();
+        for (var i = 0; i < saved.length; i++) {
+            var el = document.getElementsByName('custom_step_' + i)[0];
+            if (el) el.value = saved[i];
+        }
+        updateFlow();
+        document.getElementById('customBtn').classList.add('active');
+        document.getElementById('flowBuilder').classList.remove('hidden');
+        document.getElementById('techniqueLabel').innerText = saved.join(' → ');
+        document.getElementById('modeLabel').innerText = 'Custom Chain';
+        document.querySelectorAll('.technique-btn').forEach(function(b) { if (b.id !== 'customBtn') b.classList.remove('active'); });
+        {% else %}
+        rebuildSteps();
+        {% endif %}
     });
 </script>
 {% endblock %}

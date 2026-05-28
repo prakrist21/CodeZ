@@ -1,4 +1,4 @@
-# CodeZ
+# Spark
 
 A Flask web app for encoding and decoding text using multiple techniques.
 
@@ -8,7 +8,7 @@ A Flask web app for encoding and decoding text using multiple techniques.
 
 | Technique   | Description |
 |-------------|-------------|
-| **CodeZ**   | Shifts each letter +6 positions in the alphabet, then reverses each word |
+| **Spark**   | Shifts each letter +6 positions in the alphabet, then reverses each word |
 | **Reverse** | Reverses each word in the sentence |
 | **Binary**  | Converts text to/from 8-bit binary representation |
 | **Atbash**  | Substitutes each letter with its reverse-alphabet counterpart (a↔z, b↔y, etc.) |

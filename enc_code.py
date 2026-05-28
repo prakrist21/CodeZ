@@ -1,53 +1,45 @@
-MIN = 97
-MAX = 122
+# --- Base functions ---
 
-# --- CodeZ (original) ---
-
-def encode_char(a):
-    if not a.islower():
+def encode_char(a, num=6):
+    if not a.isalpha():
         return a
-    new_value = ord(a) + 6
-    if new_value > MAX:
-        diff = new_value - MAX - 1
-        new_value = MIN + diff
-    return chr(new_value)
+    if a.isupper():
+        return chr((ord(a) - ord('A') + num) % 26 + ord('A'))
+    return chr((ord(a) - ord('a') + num) % 26 + ord('a'))
 
-def decode_char(a):
-    if not a.islower():
+def decode_char(a, num=6):
+    if not a.isalpha():
         return a
-    new_value = ord(a) - 6
-    if new_value < MIN:
-        diff = MIN - new_value - 1
-        new_value = MAX - diff
-    return chr(new_value)
+    if a.isupper():
+        return chr((ord(a) - ord('A') - num) % 26 + ord('A'))
+    return chr((ord(a) - ord('a') - num) % 26 + ord('a'))
 
-def encode_sentence(sent):
+def rev_sentence(sent):
+    words = sent.split(" ")
+    return " ".join(word[::-1] for word in words)
+
+
+# --- SparkFlip ---
+
+def flip_encode(sent):
     sent = rev_sentence(sent)
     result = ""
     for x in sent:
         if x == " ":
             result += " "
-        elif x.isupper():
-            result += encode_char(x.lower()).upper()
         else:
-            result += encode_char(x)
+            result += encode_char(x, 6)
     return result
 
-def decode_sentence(sent):
+def flip_decode(sent):
     result = ""
     for x in sent:
         if x == " ":
             result += " "
-        elif x.isupper():
-            result += decode_char(x.lower()).upper()
         else:
-            result += decode_char(x)
+            result += decode_char(x, 6)
     result = rev_sentence(result)
     return result
-
-def rev_sentence(sent):
-    words = sent.split(" ")
-    return " ".join(word[::-1] for word in words)
 
 
 # --- Reverse Only ---
@@ -70,7 +62,8 @@ def binary_decode(sent):
         return "".join(chr(int(b, 2)) for b in bits)
     except:
         return "Invalid binary input"
-    
+
+
 # --- Atbash ---
 
 def atbash_encode(sent):
@@ -86,7 +79,7 @@ def atbash_encode(sent):
     return result
 
 def atbash_decode(sent):
-    return atbash_encode(sent)  # atbash is its own inverse
+    return atbash_encode(sent)
 
 
 # --- Morse Code ---
@@ -154,7 +147,6 @@ def rail_fence_decode(sent, rails=3):
         elif rail == rails - 1:
             direction = -1
         rail += direction
-
     indices = sorted(range(n), key=lambda i: pattern[i])
     result = [''] * n
     for i, char in zip(indices, sent):
@@ -174,15 +166,50 @@ def ascii_decode(sent, shift=10):
         return "Invalid ASCII input"
 
 
-# --- CodeZ 1.1 ---
-def code(sent):
-    words=sent.split(" ")
-    new=""
+# --- SparkStep ---
+
+def step_encode(sent):
+    words = sent.split(" ")
+    new = ""
     for x in words:
         for y in range(len(x)):
-            c_new=chr(ord(x[y]) + y)
-            new=new+x[y]
-        new=new+" "
-    print(new)
-    print(words)
-code("today is sunday")
+            new += encode_char(x[y], y + 1)
+        new += " "
+    return new.strip()
+
+def step_decode(sent):
+    words = sent.split(" ")
+    new = ""
+    for x in words:
+        for y in range(len(x)):
+            new += decode_char(x[y], y + 1)
+        new += " "
+    return new.strip()
+
+
+# --- SparkWave ---
+
+def wave_encode(sent):
+    words = sent.split(" ")
+    new = ""
+    for x in words:
+        for y in range(len(x)):
+            if y % 2 == 0:
+                new += encode_char(x[y], 6)   # even → +6
+            else:
+                new += encode_char(x[y], -6)  # odd → -6
+        new += " "
+    return rev_sentence(new.strip())
+
+def wave_decode(sent):
+    sent = rev_sentence(sent)
+    words = sent.split(" ")
+    new = ""
+    for x in words:
+        for y in range(len(x)):
+            if y % 2 == 0:
+                new += decode_char(x[y], 6)   # reverse even
+            else:
+                new += decode_char(x[y], -6)  # reverse odd
+        new += " "
+    return new.strip()
