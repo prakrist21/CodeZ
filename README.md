@@ -2,7 +2,7 @@
 
 A Flask web app for encoding and decoding text using multiple techniques.
 
-**Live demo:** [https://codez-9jsr.onrender.com/](https://codez-9jsr.onrender.com/)
+**Live demo:** [https://spark-jxyc.onrender.com/]
 
 ## Techniques
 
