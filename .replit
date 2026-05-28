@@ -1,2 +1,2 @@
 [run]
-command = "python app.py"
+command = "git pull origin main && python app.py"
