@@ -1,1 +1,1 @@
-web: gunicorn enc_code:app
+web: gunicorn app:app
