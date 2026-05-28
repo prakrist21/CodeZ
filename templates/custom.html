@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %} – Custom Cipher{% endblock %}
+
+{% block head_styles %}
+<style>
+    .flow-builder {
+        background: #111;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+    }
+
+    .flow-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #1a1a1a;
+    }
+
+    .flow-header i { font-size: 18px; color: #ffcc00; }
+    .flow-header span {
+        font-size: 13px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #ffcc00;
+    }
+
+    .flow-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .flow-count-select {
+        background: #0d0d0d;
+        color: #ffcc00;
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .flow-count-select:hover { border-color: #444; }
+    .flow-count-select:focus { border-color: #ffcc00; }
+    .flow-count-select option { color: #ccc; background: #111; }
+
+    .flow-steps {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .flow-step {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .flow-step .step-label {
+        font-size: 11px;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        min-width: 14px;
+    }
+
+    .flow-step select {
+        background: #0d0d0d;
+        color: #ffcc00;
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .flow-step select:hover { border-color: #444; }
+    .flow-step select:focus { border-color: #ffcc00; }
+    .flow-step select option { color: #ccc; background: #111; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-header">
+    <h2>Custom Cipher</h2>
+    <span>Chain Multiple Ciphers</span>
+</div>
+
+<div class="flow-builder">
+    <div class="flow-header">
+        <i class="ti ti-layer"></i>
+        <span>Cipher Flow</span>
+    </div>
+    <div class="flow-row">
+        <label class="flow-step">
+            <span class="step-label">Count</span>
+            <select class="flow-count-select" id="flowCount" onchange="rebuildSteps()">
+                <option value="2">2 ciphers</option>
+                <option value="3">3 ciphers</option>
+                <option value="4">4 ciphers</option>
+            </select>
+        </label>
+        <div class="flow-steps" id="flowSteps"></div>
+    </div>
+</div>
+
+<form method="POST" id="encodeForm">
+    <input type="hidden" name="custom_flow" id="customFlowInput" value="">
+    <div class="container">
+
+        <!-- ENCODE -->
+        <div class="box encode-box">
+            <div class="box-header">
+                <i class="ti ti-lock"></i>
+                <h2>Encode</h2>
+            </div>
+            <textarea name="encode_sentence"
+                      placeholder="enter plaintext or paste a letter...">{{ enc_original or '' }}</textarea>
+            <button type="submit" name="action" value="encode">
+                <i class="ti ti-arrow-right"></i> Run Encode
+            </button>
+
+            {% if enc_result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <span class="label">Input</span>
+                </div>
+                <div class="value input-value">{{ enc_original }}</div>
+                <div class="arrow">↓</div>
+                <div class="result-header">
+                    <span class="label">Encoded</span>
+                    <button type="button" class="copy-btn" onclick="copyText('enc-output', this)">
+                        <i class="ti ti-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="value output-value" id="enc-output">{{ enc_result }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- DECODE -->
+        <div class="box decode-box">
+            <div class="box-header">
+                <i class="ti ti-lock-open"></i>
+                <h2>Decode</h2>
+            </div>
+            <textarea name="decode_sentence"
+                      placeholder="enter ciphertext or paste a letter...">{{ dec_original or '' }}</textarea>
+            <button type="submit" name="action" value="decode">
+                <i class="ti ti-arrow-left"></i> Run Decode
+            </button>
+
+            {% if dec_result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <span class="label">Input</span>
+                </div>
+                <div class="value input-value">{{ dec_original }}</div>
+                <div class="arrow">↓</div>
+                <div class="result-header">
+                    <span class="label">Decoded</span>
+                    <button type="button" class="copy-btn" onclick="copyText('dec-output', this)">
+                        <i class="ti ti-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="value output-value" id="dec-output">{{ dec_result }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const CIPHERS = [
+        {id: 'codez', label: 'CodeZ'},
+        {id: 'reverse', label: 'Reverse'},
+        {id: 'atbash', label: 'Atbash'},
+        {id: 'rail', label: 'Rail Fence'}
+    ];
+
+    const SUFFIXES = ['st', 'nd', 'rd', 'th'];
+
+    function stepLabel(i) {
+        return (i + 1) + SUFFIXES[Math.min(i, 3)];
+    }
+
+    function rebuildSteps() {
+        var count = parseInt(document.getElementById('flowCount').value);
+        var container = document.getElementById('flowSteps');
+        container.innerHTML = '';
+
+        for (var i = 0; i < count; i++) {
+            var label = document.createElement('span');
+            label.className = 'step-label';
+            label.textContent = stepLabel(i);
+
+            var select = document.createElement('select');
+            select.name = 'custom_step_' + i;
+            select.onchange = updateFlow;
+
+            // blank option
+            var blank = document.createElement('option');
+            blank.value = '';
+            blank.textContent = '—';
+            select.appendChild(blank);
+
+            CIPHERS.forEach(function(c) {
+                var opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.label;
+                select.appendChild(opt);
+            });
+
+            var step = document.createElement('label');
+            step.className = 'flow-step';
+            step.appendChild(label);
+            step.appendChild(select);
+            container.appendChild(step);
+        }
+
+        // restore saved values if present
+        {% if custom_flow %}
+        var saved = {{ custom_flow | tojson }};
+        for (var i = 0; i < saved.length && i < count; i++) {
+            var el = document.getElementsByName('custom_step_' + i)[0];
+            if (el) el.value = saved[i];
+        }
+        {% endif %}
+
+        updateFlow();
+    }
+
+    function updateFlow() {
+        var count = parseInt(document.getElementById('flowCount').value);
+        var flow = [];
+        for (var i = 0; i < count; i++) {
+            var el = document.getElementsByName('custom_step_' + i)[0];
+            if (el && el.value) flow.push(el.value);
+        }
+        document.getElementById('customFlowInput').value = flow.join(',');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if custom_flow %}
+        var saved = {{ custom_flow | tojson }};
+        document.getElementById('flowCount').value = String(Math.max(saved.length, 2));
+        {% endif %}
+        rebuildSteps();
+    });
+</script>
+{% endblock %}

@@ -1,690 +1,143 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>CodeZ</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+{% extends "base.html" %}
 
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0d0d0d;
-            color: #00ff88;
-            min-height: 100vh;
-            display: flex;
-        }
+{% block title %} – Home{% endblock %}
 
-        /* ── Sidebar ── */
-        .sidebar {
-            width: 220px;
-            min-height: 100vh;
-            background: #111;
-            border-right: 1px solid #1a1a1a;
-            display: flex;
-            flex-direction: column;
-            padding: 30px 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
+{% block sidebar_extra %}
+<form method="POST" id="mainForm">
+    <div class="sidebar-section">Techniques</div>
 
-        .sidebar-logo {
-            text-align: center;
-            padding: 0 20px 30px 20px;
-            border-bottom: 1px solid #1a1a1a;
-        }
+    <button type="button" class="technique-btn {% if selected_technique == 'codez' %}active{% endif %}"
+            onclick="selectTechnique('codez')">
+        <i class="ti ti-code"></i> CodeZ
+    </button>
+    <button type="button" class="technique-btn {% if selected_technique == 'reverse' %}active{% endif %}"
+            onclick="selectTechnique('reverse')">
+        <i class="ti ti-transfer"></i> Reverse
+    </button>
+    <button type="button" class="technique-btn {% if selected_technique == 'binary' %}active{% endif %}"
+            onclick="selectTechnique('binary')">
+        <i class="ti ti-binary"></i> Binary
+    </button>
+    <button type="button" class="technique-btn {% if selected_technique == 'atbash' %}active{% endif %}"
+            onclick="selectTechnique('atbash')">
+        <i class="ti ti-arrows-exchange"></i> Atbash
+    </button>
+    <button type="button" class="technique-btn {% if selected_technique == 'morse' %}active{% endif %}"
+            onclick="selectTechnique('morse')">
+        <i class="ti ti-radio"></i> Morse
+    </button>
+    <button type="button" class="technique-btn {% if selected_technique == 'rail' %}active{% endif %}"
+            onclick="selectTechnique('rail')">
+        <i class="ti ti-fence"></i> Rail Fence
+    </button>
+    <button type="button" class="technique-btn {% if selected_technique == 'ascii' %}active{% endif %}"
+            onclick="selectTechnique('ascii')">
+        <i class="ti ti-numbers"></i> ASCII
+    </button>
 
-        .sidebar-logo i {
-            font-size: 36px;
-            color: #00ff88;
-        }
+    <input type="hidden" name="technique" id="techniqueInput" value="{{ selected_technique }}">
+</form>
+{% endblock %}
 
-        .sidebar-logo h1 {
-            font-size: 20px;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: #00ff88;
-            margin-top: 8px;
-        }
+{% block content %}
+<div class="main-header">
+    <h2>Selected Technique</h2>
+    <span id="techniqueLabel">{{ selected_technique }}</span>
+</div>
 
-        .sidebar-logo p {
-            font-size: 10px;
-            letter-spacing: 2px;
-            color: #333;
-            margin-top: 4px;
-        }
+<form method="POST" id="encodeForm">
+    <input type="hidden" name="technique" id="techniqueInputMain" value="{{ selected_technique }}">
 
-        .sidebar-section {
-            padding: 20px 16px 8px 16px;
-            font-size: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #333;
-        }
+    <div class="container">
 
-        .technique-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 16px;
-            margin: 2px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #555;
-            border: 1px solid transparent;
-            background: transparent;
-            font-family: 'Courier New', monospace;
-            transition: all 0.2s;
-            width: calc(100% - 16px);
-            text-align: left;
-        }
-
-        .technique-btn i { font-size: 16px; }
-        .technique-btn:hover { color: #aaa; background: #161616; }
-        .technique-btn.active {
-            color: #00ff88;
-            background: #0a1f13;
-            border-color: #1a3d26;
-        }
-
-        .sidebar-nav {
-            margin-top: auto;
-            border-top: 1px solid #1a1a1a;
-            padding: 16px 8px 0 8px;
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #555;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .sidebar-nav a:hover { color: #aaa; background: #161616; }
-        .sidebar-nav a.active { color: #00ff88; }
-
-        /* ── Main content ── */
-        .main {
-            margin-left: 220px;
-            flex: 1;
-            padding: 40px;
-            min-height: 100vh;
-        }
-
-        .main-header {
-            margin-bottom: 30px;
-        }
-
-        .main-header h2 {
-            font-size: 13px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #333;
-            font-weight: normal;
-        }
-
-        .main-header span {
-            font-size: 20px;
-            letter-spacing: 3px;
-            color: #00ff88;
-            text-transform: uppercase;
-        }
-
-        /* ── Encode / Decode panels ── */
-        .container {
-            display: flex;
-            gap: 24px;
-        }
-
-        .box {
-            flex: 1;
-            background: #111;
-            border: 1px solid #1a1a1a;
-            border-radius: 8px;
-            padding: 28px;
-        }
-
-        .box-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #1a1a1a;
-        }
-
-        .box-header i { font-size: 20px; }
-        .encode-box .box-header i { color: #00ff88; }
-        .decode-box .box-header i { color: #00aaff; }
-
-        .box-header h2 {
-            font-size: 13px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            font-weight: normal;
-        }
-
-        .encode-box .box-header h2 { color: #00ff88; }
-        .decode-box .box-header h2 { color: #00aaff; }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            font-family: 'Courier New', monospace;
-            background: #0d0d0d;
-            border: 1px solid #222;
-            border-radius: 6px;
-            color: #ccc;
-            outline: none;
-            resize: vertical;
-            min-height: 180px;
-            line-height: 1.6;
-            transition: border 0.2s;
-        }
-
-        .encode-box textarea:focus { border-color: #00ff88; }
-        .decode-box textarea:focus { border-color: #00aaff; }
-
-        button[type="submit"] {
-            margin-top: 12px;
-            width: 100%;
-            padding: 11px;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: opacity 0.2s;
-            font-weight: bold;
-        }
-
-        button[type="submit"]:hover { opacity: 0.85; }
-        .encode-box button[type="submit"] { background: #00ff88; color: #0d0d0d; }
-        .decode-box button[type="submit"] { background: #00aaff; color: #0d0d0d; }
-
-        .result-box {
-            margin-top: 20px;
-            background: #0d0d0d;
-            border: 1px solid #1a1a1a;
-            border-radius: 6px;
-            padding: 16px;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .label {
-            font-size: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #444;
-        }
-
-        .copy-btn {
-            width: auto;
-            padding: 4px 10px;
-            font-size: 10px;
-            letter-spacing: 2px;
-            background: #1a1a1a;
-            color: #888;
-            border: 1px solid #222;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-            font-family: 'Courier New', monospace;
-            text-transform: uppercase;
-        }
-
-        .copy-btn:hover { color: #fff; border-color: #444; }
-        .copy-btn.copied { color: #00ff88; border-color: #00ff88; }
-
-        .value {
-            font-size: 15px;
-            word-break: break-all;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .encode-box .output-value { color: #00ff88; }
-        .decode-box .output-value { color: #00aaff; }
-        .input-value { color: #555; }
-
-        .arrow {
-            text-align: center;
-            font-size: 16px;
-            color: #333;
-            margin: 10px 0;
-        }
-
-        /* ── Flow Builder ── */
-        .flow-builder {
-            background: #111;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
-        }
-
-        .flow-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #1a1a1a;
-        }
-
-        .flow-header i { font-size: 18px; color: #ffcc00; }
-        .flow-header span {
-            font-size: 13px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #ffcc00;
-        }
-
-        .flow-body {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            align-items: flex-start;
-        }
-
-        .flow-list {
-            flex: 1;
-            min-width: 260px;
-        }
-
-        .flow-empty {
-            color: #333;
-            font-size: 12px;
-            letter-spacing: 2px;
-            padding: 12px;
-            text-align: center;
-            border: 1px dashed #222;
-            border-radius: 6px;
-        }
-
-        .flow-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #0d0d0d;
-            border: 1px solid #2a2a2a;
-            border-radius: 6px;
-            padding: 8px 10px;
-            margin-bottom: 6px;
-            animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-4px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .flow-item .step-num {
-            color: #555;
-            font-size: 11px;
-            min-width: 20px;
-            text-align: center;
-        }
-
-        .flow-item .step-name {
-            flex: 1;
-            font-size: 13px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #ffcc00;
-        }
-
-        .flow-item .flow-btn {
-            background: transparent;
-            border: 1px solid #2a2a2a;
-            border-radius: 4px;
-            color: #555;
-            cursor: pointer;
-            padding: 4px 6px;
-            font-size: 14px;
-            line-height: 1;
-            transition: all 0.2s;
-            font-family: 'Courier New', monospace;
-        }
-
-        .flow-item .flow-btn:hover { color: #fff; border-color: #444; }
-        .flow-item .flow-btn.remove-btn:hover { color: #ff4444; border-color: #ff4444; }
-
-        .flow-avail {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .flow-avail-label {
-            font-size: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #444;
-            margin-right: 4px;
-        }
-
-        .flow-avail-btn {
-            background: #0d0d0d;
-            border: 1px solid #2a2a2a;
-            border-radius: 4px;
-            color: #888;
-            cursor: pointer;
-            padding: 6px 12px;
-            font-size: 11px;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: all 0.2s;
-        }
-
-        .flow-avail-btn:hover { color: #ffcc00; border-color: #ffcc00; background: #1a1400; }
-
-        /* ── Responsive ── */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                min-height: auto;
-                position: relative;
-                flex-direction: row;
-                flex-wrap: wrap;
-                padding: 16px;
-            }
-            .main { margin-left: 0; padding: 20px; }
-            .container { flex-direction: column; }
-            body { flex-direction: column; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <i class="ti ti-shield-lock"></i>
-            <h1>CodeZ</h1>
-            <p>encode · decode · secure</p>
-        </div>
-
-        <form method="POST" id="mainForm">
-            <div class="sidebar-section">Techniques</div>
-
-            <button type="button" class="technique-btn {% if selected_technique == 'codez' %}active{% endif %}"
-                    onclick="selectTechnique('codez')">
-                <i class="ti ti-code"></i> CodeZ
-            </button>
-            <button type="button" class="technique-btn {% if selected_technique == 'reverse' %}active{% endif %}"
-                    onclick="selectTechnique('reverse')">
-                <i class="ti ti-transfer"></i> Reverse
-            </button>
-            <button type="button" class="technique-btn {% if selected_technique == 'binary' %}active{% endif %}"
-                    onclick="selectTechnique('binary')">
-                <i class="ti ti-binary"></i> Binary
-            </button>
-            <button type="button" class="technique-btn {% if selected_technique == 'atbash' %}active{% endif %}"
-                    onclick="selectTechnique('atbash')">
-                <i class="ti ti-arrows-exchange"></i> Atbash
-            </button>
-            <button type="button" class="technique-btn {% if selected_technique == 'morse' %}active{% endif %}"
-                    onclick="selectTechnique('morse')">
-                <i class="ti ti-radio"></i> Morse
-            </button>
-            <button type="button" class="technique-btn {% if selected_technique == 'rail' %}active{% endif %}"
-                    onclick="selectTechnique('rail')">
-                <i class="ti ti-fence"></i> Rail Fence
-            </button>
-            <button type="button" class="technique-btn {% if selected_technique == 'ascii' %}active{% endif %}"
-                    onclick="selectTechnique('ascii')">
-                <i class="ti ti-numbers"></i> ASCII
-            </button>
-
-            <div class="sidebar-section" style="margin-top:8px;">Custom</div>
-
-            <button type="button" class="technique-btn {% if selected_technique == 'custom' %}active{% endif %}"
-                    onclick="selectTechnique('custom')">
-                <i class="ti ti-layer"></i> Custom Cipher
-            </button>
-
-            <input type="hidden" name="technique" id="techniqueInput" value="{{ selected_technique }}">
-
-        </form>
-
-        <div class="sidebar-nav">
-            <a href="/" class="active"><i class="ti ti-home"></i> Home</a>
-            <a href="/about"><i class="ti ti-info-circle"></i> About</a>
-        </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-        <div class="main-header">
-            <h2>Selected Technique</h2>
-            <span id="techniqueLabel">{{ selected_technique }}</span>
-        </div>
-
-        <!-- CUSTOM FLOW BUILDER -->
-        <div id="flowBuilder" class="flow-builder" style="display:none;">
-            <div class="flow-header">
-                <i class="ti ti-layer"></i>
-                <span>Cipher Flow</span>
+        <!-- ENCODE -->
+        <div class="box encode-box">
+            <div class="box-header">
+                <i class="ti ti-lock"></i>
+                <h2>Encode</h2>
             </div>
-            <div class="flow-body">
-                <div class="flow-list" id="flowList">
-                    <div class="flow-empty">No ciphers selected — add at least 2</div>
+            <textarea name="encode_sentence"
+                      placeholder="enter plaintext or paste a letter...">{{ enc_original or '' }}</textarea>
+            <button type="submit" name="action" value="encode">
+                <i class="ti ti-arrow-right"></i> Run Encode
+            </button>
+
+            {% if enc_result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <span class="label">Input</span>
                 </div>
-                <div class="flow-avail" id="flowAvail">
-                    <span class="flow-avail-label">Add:</span>
-                </div>
-            </div>
-            <input type="hidden" name="custom_flow" id="customFlowInput" value="">
-        </div>
-
-        <form method="POST" id="encodeForm">
-            <input type="hidden" name="technique" id="techniqueInputMain" value="{{ selected_technique }}">
-
-            <div class="container">
-
-                <!-- ENCODE -->
-                <div class="box encode-box">
-                    <div class="box-header">
-                        <i class="ti ti-lock"></i>
-                        <h2>Encode</h2>
-                    </div>
-                    <textarea name="encode_sentence"
-                              placeholder="enter plaintext or paste a letter...">{{ enc_original or '' }}</textarea>
-                    <button type="submit" name="action" value="encode">
-                        <i class="ti ti-arrow-right"></i> Run Encode
+                <div class="value input-value">{{ enc_original }}</div>
+                <div class="arrow">↓</div>
+                <div class="result-header">
+                    <span class="label">Encoded</span>
+                    <button type="button" class="copy-btn" onclick="copyText('enc-output', this)">
+                        <i class="ti ti-copy"></i> Copy
                     </button>
-
-                    {% if enc_result %}
-                    <div class="result-box">
-                        <div class="result-header">
-                            <span class="label">Input</span>
-                        </div>
-                        <div class="value input-value">{{ enc_original }}</div>
-                        <div class="arrow">↓</div>
-                        <div class="result-header">
-                            <span class="label">Encoded</span>
-                            <button type="button" class="copy-btn" onclick="copyText('enc-output', this)">
-                                <i class="ti ti-copy"></i> Copy
-                            </button>
-                        </div>
-                        <div class="value output-value" id="enc-output">{{ enc_result }}</div>
-                    </div>
-                    {% endif %}
                 </div>
-
-                <!-- DECODE -->
-                <div class="box decode-box">
-                    <div class="box-header">
-                        <i class="ti ti-lock-open"></i>
-                        <h2>Decode</h2>
-                    </div>
-                    <textarea name="decode_sentence"
-                              placeholder="enter ciphertext or paste a letter...">{{ dec_original or '' }}</textarea>
-                    <button type="submit" name="action" value="decode">
-                        <i class="ti ti-arrow-left"></i> Run Decode
-                    </button>
-
-                    {% if dec_result %}
-                    <div class="result-box">
-                        <div class="result-header">
-                            <span class="label">Input</span>
-                        </div>
-                        <div class="value input-value">{{ dec_original }}</div>
-                        <div class="arrow">↓</div>
-                        <div class="result-header">
-                            <span class="label">Decoded</span>
-                            <button type="button" class="copy-btn" onclick="copyText('dec-output', this)">
-                                <i class="ti ti-copy"></i> Copy
-                            </button>
-                        </div>
-                        <div class="value output-value" id="dec-output">{{ dec_result }}</div>
-                    </div>
-                    {% endif %}
-                </div>
-
+                <div class="value output-value" id="enc-output">{{ enc_result }}</div>
             </div>
-        </form>
-    </main>
-
-    <script>
-        const labels = {
-            codez: 'CodeZ Cipher',
-            reverse: 'Reverse Only',
-            binary: 'Binary',
-            atbash: 'Atbash',
-            morse: 'Morse Code',
-            rail: 'Rail Fence',
-            ascii: 'ASCII Shift',
-            custom: 'Custom Cipher'
-        };
-
-        const customLabels = {
-            codez: 'CodeZ',
-            reverse: 'Reverse',
-            atbash: 'Atbash',
-            rail: 'Rail Fence'
-        };
-
-        let flow = [];
-
-        function selectTechnique(val) {
-            document.getElementById('techniqueInput').value = val;
-            document.getElementById('techniqueInputMain').value = val;
-            document.getElementById('techniqueLabel').innerText = labels[val];
-
-            document.querySelectorAll('.technique-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            const fb = document.getElementById('flowBuilder');
-            if (val === 'custom') {
-                fb.style.display = 'block';
-            } else {
-                fb.style.display = 'none';
-            }
-        }
-
-        function renderFlow() {
-            const list = document.getElementById('flowList');
-            const input = document.getElementById('customFlowInput');
-            const avail = document.getElementById('flowAvail');
-
-            if (flow.length === 0) {
-                list.innerHTML = '<div class="flow-empty">No ciphers selected — add at least 2</div>';
-            } else {
-                list.innerHTML = flow.map((t, i) =>
-                    `<div class="flow-item">
-                        <span class="step-num">${i + 1}.</span>
-                        <span class="step-name">${customLabels[t]}</span>
-                        ${i > 0 ? `<button type="button" class="flow-btn" onclick="moveFlow(${i}, -1)">↑</button>` : ''}
-                        ${i < flow.length - 1 ? `<button type="button" class="flow-btn" onclick="moveFlow(${i}, 1)">↓</button>` : ''}
-                        <button type="button" class="flow-btn remove-btn" onclick="removeFlow(${i})">✕</button>
-                    </div>`
-                ).join('');
-            }
-
-            input.value = flow.join(',');
-
-            const used = new Set(flow);
-            const available = Object.keys(customLabels).filter(t => !used.has(t));
-            if (available.length === 0) {
-                avail.innerHTML = '<span class="flow-avail-label">All added</span>';
-            } else {
-                avail.innerHTML = '<span class="flow-avail-label">Add:</span> ' +
-                    available.map(t =>
-                        `<button type="button" class="flow-avail-btn" onclick="addFlow('${t}')">+ ${customLabels[t]}</button>`
-                    ).join('');
-            }
-        }
-
-        function addFlow(t) {
-            flow.push(t);
-            renderFlow();
-        }
-
-        function removeFlow(i) {
-            flow.splice(i, 1);
-            renderFlow();
-        }
-
-        function moveFlow(i, dir) {
-            const j = i + dir;
-            if (j < 0 || j >= flow.length) return;
-            [flow[i], flow[j]] = [flow[j], flow[i]];
-            renderFlow();
-        }
-
-        function copyText(id, btn) {
-            const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                btn.innerHTML = '<i class="ti ti-check"></i> Copied';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="ti ti-copy"></i> Copy';
-                    btn.classList.remove('copied');
-                }, 2000);
-            });
-        }
-
-        // Init from server-side on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            var curTech = '{{ selected_technique }}';
-            document.getElementById('techniqueLabel').innerText = labels[curTech] || curTech;
-            {% if selected_technique == 'custom' and custom_flow %}
-            flow = {{ custom_flow | tojson }};
-            renderFlow();
-            document.getElementById('flowBuilder').style.display = 'block';
             {% endif %}
-        });
-    </script>
+        </div>
 
-</body>
-</html>
+        <!-- DECODE -->
+        <div class="box decode-box">
+            <div class="box-header">
+                <i class="ti ti-lock-open"></i>
+                <h2>Decode</h2>
+            </div>
+            <textarea name="decode_sentence"
+                      placeholder="enter ciphertext or paste a letter...">{{ dec_original or '' }}</textarea>
+            <button type="submit" name="action" value="decode">
+                <i class="ti ti-arrow-left"></i> Run Decode
+            </button>
+
+            {% if dec_result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <span class="label">Input</span>
+                </div>
+                <div class="value input-value">{{ dec_original }}</div>
+                <div class="arrow">↓</div>
+                <div class="result-header">
+                    <span class="label">Decoded</span>
+                    <button type="button" class="copy-btn" onclick="copyText('dec-output', this)">
+                        <i class="ti ti-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="value output-value" id="dec-output">{{ dec_result }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const labels = {
+        codez: 'CodeZ Cipher',
+        reverse: 'Reverse Only',
+        binary: 'Binary',
+        atbash: 'Atbash',
+        morse: 'Morse Code',
+        rail: 'Rail Fence',
+        ascii: 'ASCII Shift'
+    };
+
+    function selectTechnique(val) {
+        document.getElementById('techniqueInput').value = val;
+        document.getElementById('techniqueInputMain').value = val;
+        document.getElementById('techniqueLabel').innerText = labels[val];
+
+        document.querySelectorAll('.technique-btn').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var curTech = '{{ selected_technique }}';
+        document.getElementById('techniqueLabel').innerText = labels[curTech] || curTech;
+    });
+</script>
+{% endblock %}

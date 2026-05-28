@@ -1,300 +1,261 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>CodeZ — About</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+{% extends "base.html" %}
 
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0d0d0d;
-            color: #00ff88;
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
+{% block title %} – About{% endblock %}
 
-        nav {
-            display: flex;
-            justify-content: flex-end;
-            max-width: 900px;
-            margin: 0 auto 30px auto;
-            gap: 20px;
-        }
+{% block head_styles %}
+<style>
+    .about-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
 
-        nav a {
-            color: #555;
-            text-decoration: none;
-            font-size: 13px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            transition: color 0.2s;
-        }
+    .about-header .logo { font-size: 48px; color: #00ff88; }
 
-        nav a:hover, nav a.active { color: #00ff88; }
+    .about-header h1 {
+        font-size: 28px;
+        font-weight: bold;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        color: #00ff88;
+        margin-top: 10px;
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+    .about-header p {
+        color: #555;
+        font-size: 13px;
+        letter-spacing: 3px;
+        margin-top: 6px;
+    }
 
-        .header .logo { font-size: 48px; color: #00ff88; }
+    .cards {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-        .header h1 {
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: #00ff88;
-            margin-top: 10px;
-        }
+    .card {
+        background: #111;
+        border: 1px solid #1a1a1a;
+        border-radius: 8px;
+        padding: 28px;
+    }
 
-        .header p {
-            color: #555;
-            font-size: 13px;
-            letter-spacing: 3px;
-            margin-top: 6px;
-        }
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #1a1a1a;
+    }
 
-        .cards {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+    .card-header i { font-size: 24px; color: #00ff88; }
 
-        .card {
-            background: #111;
-            border: 1px solid #1a1a1a;
-            border-radius: 8px;
-            padding: 28px;
-        }
+    .card-header h2 {
+        font-size: 16px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #00ff88;
+        font-weight: normal;
+    }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #1a1a1a;
-        }
+    .card p {
+        color: #888;
+        font-size: 14px;
+        line-height: 1.8;
+        margin-bottom: 14px;
+    }
 
-        .card-header i { font-size: 24px; color: #00ff88; }
+    .example-box {
+        background: #0d0d0d;
+        border: 1px solid #1a1a1a;
+        border-radius: 6px;
+        padding: 14px 16px;
+        font-size: 13px;
+    }
 
-        .card-header h2 {
-            font-size: 16px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #00ff88;
-            font-weight: normal;
-        }
+    .example-box .ex-label {
+        color: #444;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
 
-        .card p {
-            color: #888;
-            font-size: 14px;
-            line-height: 1.8;
-            margin-bottom: 14px;
-        }
+    .example-box .ex-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
 
-        .example-box {
-            background: #0d0d0d;
-            border: 1px solid #1a1a1a;
-            border-radius: 6px;
-            padding: 14px 16px;
-            font-size: 13px;
-        }
+    .ex-val { color: #ccc; }
+    .ex-arrow { color: #333; }
+    .ex-result { color: #00ff88; }
+</style>
+{% endblock %}
 
-        .example-box .ex-label {
-            color: #444;
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
+{% block content %}
+<div class="about-header">
+    <div class="logo"><i class="ti ti-info-circle"></i></div>
+    <h1>About CodeZ</h1>
+    <p>how each encoding technique works</p>
+</div>
 
-        .example-box .ex-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
+<div class="cards">
 
-        .ex-val {
-            color: #ccc;
-        }
-
-        .ex-arrow { color: #333; }
-        .ex-result { color: #00ff88; }
-    </style>
-</head>
-<body>
-
-    <nav>
-        <a href="/">Home</a>
-        <a href="/about" class="active">About</a>
-    </nav>
-
-    <div class="header">
-        <div class="logo"><i class="ti ti-info-circle"></i></div>
-        <h1>About CodeZ</h1>
-        <p>how each encoding technique works</p>
+    <!-- CodeZ -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-code"></i>
+            <h2>CodeZ Cipher</h2>
+        </div>
+        <p>CodeZ is a custom two-step cipher. First, each word in the sentence is reversed individually. Then each letter is shifted forward by 6 positions in the alphabet, wrapping around from z back to a.</p>
+        <p>To decode, the shift is reversed (each letter moved back by 6), then each word is reversed again to restore the original.</p>
+        <div class="example-box">
+            <div class="ex-label">Example</div>
+            <div class="ex-row">
+                <span class="ex-val">hello</span>
+                <span class="ex-arrow">→ reverse →</span>
+                <span class="ex-val">olleh</span>
+                <span class="ex-arrow">→ shift +6 →</span>
+                <span class="ex-result">urrk n</span>
+            </div>
+        </div>
     </div>
 
-    <div class="cards">
-
-        <!-- CodeZ -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-code"></i>
-                <h2>CodeZ Cipher</h2>
-            </div>
-            <p>CodeZ is a custom two-step cipher. First, each word in the sentence is reversed individually. Then each letter is shifted forward by 6 positions in the alphabet, wrapping around from z back to a.</p>
-            <p>To decode, the shift is reversed (each letter moved back by 6), then each word is reversed again to restore the original.</p>
-            <div class="example-box">
-                <div class="ex-label">Example</div>
-                <div class="ex-row">
-                    <span class="ex-val">hello</span>
-                    <span class="ex-arrow">→ reverse →</span>
-                    <span class="ex-val">olleh</span>
-                    <span class="ex-arrow">→ shift +6 →</span>
-                    <span class="ex-result">urrk n</span>
-                </div>
+    <!-- Reverse -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-transfer"></i>
+            <h2>Reverse Only</h2>
+        </div>
+        <p>Each word in the sentence is reversed individually while keeping the word order intact. No letter shifting is applied — it is purely a mirror of each word's characters.</p>
+        <p>Decoding is identical to encoding — reversing the already-reversed words restores the original text.</p>
+        <div class="example-box">
+            <div class="ex-label">Example</div>
+            <div class="ex-row">
+                <span class="ex-val">hello world</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">olleh dlrow</span>
             </div>
         </div>
-
-        <!-- Reverse -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-transfer"></i>
-                <h2>Reverse Only</h2>
-            </div>
-            <p>Each word in the sentence is reversed individually while keeping the word order intact. No letter shifting is applied — it is purely a mirror of each word's characters.</p>
-            <p>Decoding is identical to encoding — reversing the already-reversed words restores the original text.</p>
-            <div class="example-box">
-                <div class="ex-label">Example</div>
-                <div class="ex-row">
-                    <span class="ex-val">hello world</span>
-                    <span class="ex-arrow">→</span>
-                    <span class="ex-result">olleh dlrow</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Binary -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-binary"></i>
-                <h2>Binary Encoding</h2>
-            </div>
-            <p>Each character in the text is converted to its ASCII value, then represented as an 8-bit binary number. Characters are separated by spaces in the output.</p>
-            <p>To decode, each 8-bit binary group is converted back to its decimal ASCII value, then to the corresponding character.</p>
-            <div class="example-box">
-                <div class="ex-label">Example</div>
-                <div class="ex-row">
-                    <span class="ex-val">hi</span>
-                    <span class="ex-arrow">→</span>
-                    <span class="ex-result">01101000 01101001</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Atbash -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-arrows-exchange"></i>
-                <h2>Atbash Cipher</h2>
-            </div>
-            <p>One of the oldest known ciphers, originally used for the Hebrew alphabet. Every letter is mapped to its mirror opposite — A becomes Z, B becomes Y, and so on. The alphabet is flipped.</p>
-            <p>Atbash is its own inverse — encoding and decoding use the exact same operation.</p>
-            <div class="example-box">
-                <div class="ex-label">Example</div>
-                <div class="ex-row">
-                    <span class="ex-val">hello</span>
-                    <span class="ex-arrow">→</span>
-                    <span class="ex-result">svool</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Morse -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-radio"></i>
-                <h2>Morse Code</h2>
-            </div>
-            <p>Developed in the 1830s for telegraph communication. Each letter and number is represented by a unique sequence of dots (·) and dashes (−). Words are separated by a forward slash (/).</p>
-            <p>To decode, each dot-dash group is looked up in the Morse table and converted back to its character.</p>
-            <div class="example-box">
-                <div class="ex-label">Example</div>
-                <div class="ex-row">
-                    <span class="ex-val">hi</span>
-                    <span class="ex-arrow">→</span>
-                    <span class="ex-result">.... ..</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Rail Fence -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-fence"></i>
-                <h2>Rail Fence Cipher</h2>
-            </div>
-            <p>A transposition cipher that writes the message in a zigzag pattern across a number of "rails" (rows), then reads off each rail left to right. CodeZ uses 3 rails by default.</p>
-            <p>To decode, the positions of each character on the zigzag are reconstructed and the original message is restored.</p>
-            <div class="example-box">
-                <div class="ex-label">Example (3 rails)</div>
-                <div class="ex-row">
-                    <span class="ex-val">HELLOWORLD</span>
-                    <span class="ex-arrow">→</span>
-                    <span class="ex-result">HOLELWRDLO</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ASCII -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-numbers"></i>
-                <h2>ASCII Shift</h2>
-            </div>
-            <p>Each character is converted to its ASCII numeric value, then shifted by 10. The result is a space-separated list of numbers. Works on every character including punctuation and spaces.</p>
-            <p>To decode, each number is shifted back by 10 and converted from its ASCII value back to the original character.</p>
-            <div class="example-box">
-                <div class="ex-label">Example (shift +10)</div>
-                <div class="ex-row">
-                    <span class="ex-val">hi</span>
-                    <span class="ex-arrow">→</span>
-                    <span class="ex-result">114 115</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Custom Cipher -->
-        <div class="card">
-            <div class="card-header">
-                <i class="ti ti-layer"></i>
-                <h2>Custom Cipher</h2>
-            </div>
-            <p>Chain together multiple ciphers in any order to create your own encryption pipeline. Choose from CodeZ, Reverse, Atbash, and Rail Fence — arrange them with drag-style controls to define the exact encoding flow.</p>
-            <p>Encoding applies each cipher in your chosen sequence. Decoding automatically reverses the order and applies the inverse of each cipher, restoring the original message.</p>
-            <div class="example-box">
-                <div class="ex-label">Example flow: Reverse → Atbash → Rail Fence</div>
-                <div class="ex-row">
-                    <span class="ex-val">hello</span>
-                    <span class="ex-arrow">→ Reverse →</span>
-                    <span class="ex-val">olleh</span>
-                    <span class="ex-arrow">→ Atbash →</span>
-                    <span class="ex-val">lov o</span>
-                    <span class="ex-arrow">→ Rail →</span>
-                    <span class="ex-result">l ovo</span>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-</body>
-</html>
+    <!-- Binary -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-binary"></i>
+            <h2>Binary Encoding</h2>
+        </div>
+        <p>Each character in the text is converted to its ASCII value, then represented as an 8-bit binary number. Characters are separated by spaces in the output.</p>
+        <p>To decode, each 8-bit binary group is converted back to its decimal ASCII value, then to the corresponding character.</p>
+        <div class="example-box">
+            <div class="ex-label">Example</div>
+            <div class="ex-row">
+                <span class="ex-val">hi</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">01101000 01101001</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Atbash -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-arrows-exchange"></i>
+            <h2>Atbash Cipher</h2>
+        </div>
+        <p>One of the oldest known ciphers, originally used for the Hebrew alphabet. Every letter is mapped to its mirror opposite — A becomes Z, B becomes Y, and so on. The alphabet is flipped.</p>
+        <p>Atbash is its own inverse — encoding and decoding use the exact same operation.</p>
+        <div class="example-box">
+            <div class="ex-label">Example</div>
+            <div class="ex-row">
+                <span class="ex-val">hello</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">svool</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Morse -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-radio"></i>
+            <h2>Morse Code</h2>
+        </div>
+        <p>Developed in the 1830s for telegraph communication. Each letter and number is represented by a unique sequence of dots (·) and dashes (−). Words are separated by a forward slash (/).</p>
+        <p>To decode, each dot-dash group is looked up in the Morse table and converted back to its character.</p>
+        <div class="example-box">
+            <div class="ex-label">Example</div>
+            <div class="ex-row">
+                <span class="ex-val">hi</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">.... ..</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rail Fence -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-fence"></i>
+            <h2>Rail Fence Cipher</h2>
+        </div>
+        <p>A transposition cipher that writes the message in a zigzag pattern across a number of "rails" (rows), then reads off each rail left to right. CodeZ uses 3 rails by default.</p>
+        <p>To decode, the positions of each character on the zigzag are reconstructed and the original message is restored.</p>
+        <div class="example-box">
+            <div class="ex-label">Example (3 rails)</div>
+            <div class="ex-row">
+                <span class="ex-val">HELLOWORLD</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">HOLELWRDLO</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASCII -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-numbers"></i>
+            <h2>ASCII Shift</h2>
+        </div>
+        <p>Each character is converted to its ASCII numeric value, then shifted by 10. The result is a space-separated list of numbers. Works on every character including punctuation and spaces.</p>
+        <p>To decode, each number is shifted back by 10 and converted from its ASCII value back to the original character.</p>
+        <div class="example-box">
+            <div class="ex-label">Example (shift +10)</div>
+            <div class="ex-row">
+                <span class="ex-val">hi</span>
+                <span class="ex-arrow">→</span>
+                <span class="ex-result">114 115</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Cipher -->
+    <div class="card">
+        <div class="card-header">
+            <i class="ti ti-layer"></i>
+            <h2>Custom Cipher</h2>
+        </div>
+        <p>Chain together multiple ciphers in any order to create your own encryption pipeline. Choose from CodeZ, Reverse, Atbash, and Rail Fence — arrange them in the exact sequence you want.</p>
+        <p>First pick how many ciphers to chain (2–4), then select each cipher from the dropdowns. Encoding applies each cipher in order; decoding applies them in reverse.</p>
+        <div class="example-box">
+            <div class="ex-label">Example flow: Reverse → Atbash → Rail Fence</div>
+            <div class="ex-row">
+                <span class="ex-val">hello</span>
+                <span class="ex-arrow">→ Reverse →</span>
+                <span class="ex-val">olleh</span>
+                <span class="ex-arrow">→ Atbash →</span>
+                <span class="ex-val">loovs</span>
+                <span class="ex-arrow">→ Rail →</span>
+                <span class="ex-result">lsovo</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -172,3 +172,17 @@ def ascii_decode(sent, shift=10):
         return ''.join(chr(int(x) - shift) for x in sent.strip().split(' '))
     except:
         return "Invalid ASCII input"
+
+
+# --- CodeZ 1.1 ---
+def code(sent):
+    words=sent.split(" ")
+    new=""
+    for x in words:
+        for y in range(len(x)):
+            c_new=chr(ord(x[y]) + y)
+            new=new+x[y]
+        new=new+" "
+    print(new)
+    print(words)
+code("today is sunday")

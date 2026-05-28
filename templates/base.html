@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CodeZ{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0d0d0d;
+            color: #00ff88;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 220px;
+            min-height: 100vh;
+            background: #111;
+            border-right: 1px solid #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            padding: 0 20px 30px 20px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .sidebar-logo i {
+            font-size: 36px;
+            color: #00ff88;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 20px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #00ff88;
+            margin-top: 8px;
+        }
+
+        .sidebar-logo p {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #333;
+            margin-top: 4px;
+        }
+
+        .sidebar-section {
+            padding: 20px 16px 8px 16px;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #333;
+        }
+
+        .technique-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            margin: 2px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+            border: 1px solid transparent;
+            background: transparent;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s;
+            width: calc(100% - 16px);
+            text-align: left;
+        }
+
+        .technique-btn i { font-size: 16px; }
+        .technique-btn:hover { color: #aaa; background: #161616; }
+        .technique-btn.active {
+            color: #00ff88;
+            background: #0a1f13;
+            border-color: #1a3d26;
+        }
+
+        .sidebar-nav {
+            margin-top: auto;
+            border-top: 1px solid #1a1a1a;
+            padding: 16px 8px 0 8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover { color: #aaa; background: #161616; }
+        .sidebar-nav a.active { color: #00ff88; }
+
+        /* ── Main content ── */
+        .main {
+            margin-left: 220px;
+            flex: 1;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .main-header {
+            margin-bottom: 30px;
+        }
+
+        .main-header h2 {
+            font-size: 13px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #333;
+            font-weight: normal;
+        }
+
+        .main-header span {
+            font-size: 20px;
+            letter-spacing: 3px;
+            color: #00ff88;
+            text-transform: uppercase;
+        }
+
+        /* ── Encode / Decode panels ── */
+        .container {
+            display: flex;
+            gap: 24px;
+        }
+
+        .box {
+            flex: 1;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 28px;
+        }
+
+        .box-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .box-header i { font-size: 20px; }
+        .encode-box .box-header i { color: #00ff88; }
+        .decode-box .box-header i { color: #00aaff; }
+
+        .box-header h2 {
+            font-size: 13px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        .encode-box .box-header h2 { color: #00ff88; }
+        .decode-box .box-header h2 { color: #00aaff; }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            background: #0d0d0d;
+            border: 1px solid #222;
+            border-radius: 6px;
+            color: #ccc;
+            outline: none;
+            resize: vertical;
+            min-height: 180px;
+            line-height: 1.6;
+            transition: border 0.2s;
+        }
+
+        .encode-box textarea:focus { border-color: #00ff88; }
+        .decode-box textarea:focus { border-color: #00aaff; }
+
+        button[type="submit"] {
+            margin-top: 12px;
+            width: 100%;
+            padding: 11px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+            font-weight: bold;
+        }
+
+        button[type="submit"]:hover { opacity: 0.85; }
+        .encode-box button[type="submit"] { background: #00ff88; color: #0d0d0d; }
+        .decode-box button[type="submit"] { background: #00aaff; color: #0d0d0d; }
+
+        .result-box {
+            margin-top: 20px;
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #444;
+        }
+
+        .copy-btn {
+            width: auto;
+            padding: 4px 10px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            background: #1a1a1a;
+            color: #888;
+            border: 1px solid #222;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+        }
+
+        .copy-btn:hover { color: #fff; border-color: #444; }
+        .copy-btn.copied { color: #00ff88; border-color: #00ff88; }
+
+        .value {
+            font-size: 15px;
+            word-break: break-all;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .encode-box .output-value { color: #00ff88; }
+        .decode-box .output-value { color: #00aaff; }
+        .input-value { color: #555; }
+
+        .arrow {
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 30px 0 10px 0;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #222;
+            border-top: 1px solid #111;
+            margin-top: 30px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 16px;
+            }
+            .main { margin-left: 0; padding: 20px; }
+            .container { flex-direction: column; }
+            body { flex-direction: column; }
+        }
+    </style>
+    {% block head_styles %}{% endblock %}
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="/" style="text-decoration:none;">
+            <div class="sidebar-logo">
+                <i class="ti ti-shield-lock"></i>
+                <h1>CodeZ</h1>
+                <p>encode · decode · secure</p>
+            </div>
+        </a>
+
+        {% block sidebar_extra %}{% endblock %}
+
+        <div class="sidebar-nav">
+            <a href="/" class="{% if page == 'home' %}active{% endif %}">
+                <i class="ti ti-home"></i> Home
+            </a>
+            <a href="/custom" class="{% if page == 'custom' %}active{% endif %}">
+                <i class="ti ti-layer"></i> Custom
+            </a>
+            <a href="/about" class="{% if page == 'about' %}active{% endif %}">
+                <i class="ti ti-info-circle"></i> About
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        {% block content %}{% endblock %}
+
+        <div class="footer">CodeZ &mdash; encode &middot; decode &middot; secure</div>
+    </main>
+
+    <script>
+        function copyText(id, btn) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerHTML = '<i class="ti ti-check"></i> Copied';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="ti ti-copy"></i> Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>
