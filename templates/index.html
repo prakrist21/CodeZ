@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CodeZ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0d0d0d;
+            color: #00ff88;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header .logo { font-size: 48px; color: #00ff88; }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #00ff88;
+            margin-top: 10px;
+        }
+
+        .header p {
+            color: #555;
+            font-size: 13px;
+            letter-spacing: 3px;
+            margin-top: 6px;
+        }
+
+        .container {
+            display: flex;
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .box {
+            flex: 1;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 28px;
+        }
+
+        .box-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .box-header i { font-size: 22px; }
+        .encode-box .box-header i { color: #00ff88; }
+        .decode-box .box-header i { color: #00aaff; }
+
+        .box-header h2 {
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        .encode-box .box-header h2 { color: #00ff88; }
+        .decode-box .box-header h2 { color: #00aaff; }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            background: #0d0d0d;
+            border: 1px solid #222;
+            border-radius: 6px;
+            color: #ccc;
+            outline: none;
+            resize: vertical;
+            min-height: 160px;
+            line-height: 1.6;
+            transition: border 0.2s;
+        }
+
+        .encode-box textarea:focus { border-color: #00ff88; }
+        .decode-box textarea:focus { border-color: #00aaff; }
+
+        button {
+            margin-top: 12px;
+            width: 100%;
+            padding: 11px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.85; }
+        .encode-box button { background: #00ff88; color: #0d0d0d; font-weight: bold; }
+        .decode-box button { background: #00aaff; color: #0d0d0d; font-weight: bold; }
+
+        .result-box {
+            margin-top: 20px;
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #444;
+        }
+
+        .copy-btn {
+            margin-top: 0;
+            width: auto;
+            padding: 4px 10px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            background: #1a1a1a;
+            color: #888;
+            border: 1px solid #222;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover { color: #fff; border-color: #444; }
+        .copy-btn.copied { color: #00ff88; border-color: #00ff88; }
+
+        .value {
+            font-size: 15px;
+            word-break: break-all;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .encode-box .output-value { color: #00ff88; }
+        .decode-box .output-value { color: #00aaff; }
+        .input-value { color: #555; }
+
+        .arrow {
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo"><i class="ti ti-shield-lock"></i></div>
+        <h1>CodeZ</h1>
+        <p>encode &bull; decode &bull; secure</p>
+    </div>
+
+    <div class="container">
+
+        <!-- ENCODE -->
+        <div class="box encode-box">
+            <div class="box-header">
+                <i class="ti ti-lock" aria-hidden="true"></i>
+                <h2>Encode</h2>
+            </div>
+            <form method="POST" action="/">
+                <textarea name="encode_sentence"
+                          placeholder="enter plaintext or paste a letter..."
+                          required>{{ enc_original or '' }}</textarea>
+                <button type="submit">
+                    <i class="ti ti-arrow-right" aria-hidden="true"></i> Run Encode
+                </button>
+            </form>
+
+            {% if enc_result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <span class="label">Input</span>
+                </div>
+                <div class="value input-value">{{ enc_original }}</div>
+                <div class="arrow">↓</div>
+                <div class="result-header">
+                    <span class="label">Encoded</span>
+                    <button class="copy-btn" onclick="copyText('enc-output', this)">
+                        <i class="ti ti-copy" aria-hidden="true"></i> Copy
+                    </button>
+                </div>
+                <div class="value output-value" id="enc-output">{{ enc_result }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- DECODE -->
+        <div class="box decode-box">
+            <div class="box-header">
+                <i class="ti ti-lock-open" aria-hidden="true"></i>
+                <h2>Decode</h2>
+            </div>
+            <form method="POST" action="/decode">
+                <textarea name="decode_sentence"
+                          placeholder="enter ciphertext or paste a letter..."
+                          required>{{ dec_original or '' }}</textarea>
+                <button type="submit">
+                    <i class="ti ti-arrow-left" aria-hidden="true"></i> Run Decode
+                </button>
+            </form>
+
+            {% if dec_result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <span class="label">Input</span>
+                </div>
+                <div class="value input-value">{{ dec_original }}</div>
+                <div class="arrow">↓</div>
+                <div class="result-header">
+                    <span class="label">Decoded</span>
+                    <button class="copy-btn" onclick="copyText('dec-output', this)">
+                        <i class="ti ti-copy" aria-hidden="true"></i> Copy
+                    </button>
+                </div>
+                <div class="value output-value" id="dec-output">{{ dec_result }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script>
+        function copyText(id, btn) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerHTML = '<i class="ti ti-check"></i> Copied';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="ti ti-copy"></i> Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+
+</body>
+</html>
