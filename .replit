@@ -1,2 +1,6 @@
 [run]
 command = "git pull origin main && python app.py"
+
+[deployment]
+deploymentTarget = "cloudrun"
+run = ["gunicorn", "app:app", "--bind", "0.0.0.0:8080"]
